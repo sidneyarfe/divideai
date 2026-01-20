@@ -1,0 +1,7 @@
+{
+  "name": "DivideAI",
+  "description": "Smart receipt splitter powered by Gemini. Scan receipts, assign items to friends, and calculate individual totals effortlessly.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
