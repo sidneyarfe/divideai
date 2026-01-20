@@ -28,8 +28,23 @@ const processReceiptImage = async (base64Image: string): Promise<ExtractedData> 
   `;
 
   try {
-    // Clean base64 string if it contains the data URI prefix
-    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+    // Robust extraction of Base64 data and MIME type
+    // This fixes issues with iPhone images (HEIC) or other formats that didn't match the previous Regex
+    let cleanBase64 = base64Image;
+    let mimeType = 'image/jpeg'; // Default fallback
+
+    if (base64Image.includes(',')) {
+      const parts = base64Image.split(',');
+      // The content is always after the comma
+      cleanBase64 = parts[1];
+      
+      // Try to extract the actual mime type from the header (e.g., "data:image/png;base64")
+      const header = parts[0];
+      const mimeMatch = header.match(/:([a-zA-Z0-9\/]+);/);
+      if (mimeMatch) {
+        mimeType = mimeMatch[1];
+      }
+    }
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash-exp',
@@ -37,7 +52,7 @@ const processReceiptImage = async (base64Image: string): Promise<ExtractedData> 
         parts: [
           {
             inlineData: {
-              mimeType: 'image/jpeg',
+              mimeType: mimeType,
               data: cleanBase64
             }
           },
