@@ -49,7 +49,7 @@ export const StepResult: React.FC<StepResultProps> = ({ items, people, defaultSe
     text += `------------------------------\n`;
     
     people.forEach(person => {
-        const { tip, total, personItems } = calculatePersonTotal(person.id);
+        const { subtotal, tip, total, personItems } = calculatePersonTotal(person.id);
         const hasServiceFee = serviceFeePreferences[person.id];
 
         text += `\n*${person.name}*\n`;
@@ -60,6 +60,8 @@ export const StepResult: React.FC<StepResultProps> = ({ items, people, defaultSe
             personItems.forEach(item => {
                text += `   - ${item.name} ${item.shareLabel}: R$ ${item.splitValue.toFixed(2)}\n`; 
             });
+            // New Subtotal line before the fee
+            text += `   Subtotal: R$ ${subtotal.toFixed(2)}\n`;
         }
         
         if (hasServiceFee && tip > 0) {
